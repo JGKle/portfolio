@@ -190,7 +190,6 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     {
         super(widget, dashboardData);
 
-        addConfig(new DataSeriesConfig(this, false));
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new ClientFilterConfig(this));
         addConfig(new FIRENumberConfig(this));
@@ -375,17 +374,21 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             // Get user input FIRE number
             data.setFireNumber(get(FIRENumberConfig.class).getFireNumber());
 
-            // Calculate current portfolio value
-            PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
-                            get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
-            
-            long[] totals = index.getTotals();
-            if (totals.length > 0)
+            // Calculate current portfolio value using the first (default) data series
+            var availableSeries = getDashboardData().getDataSeriesSet().getAvailableSeries();
+            if (!availableSeries.isEmpty())
             {
-                data.setCurrentValue(Money.of(index.getCurrency(), totals[totals.length - 1]));
+                PerformanceIndex index = getDashboardData().calculate(availableSeries.get(0),
+                                get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
                 
-                // Calculate annualized TWRoR
-                data.setTwror(index.getFinalAccumulatedAnnualizedPercentage());
+                long[] totals = index.getTotals();
+                if (totals.length > 0)
+                {
+                    data.setCurrentValue(Money.of(index.getCurrency(), totals[totals.length - 1]));
+                    
+                    // Calculate annualized TWRoR
+                    data.setTwror(index.getFinalAccumulatedAnnualizedPercentage());
+                }
             }
 
             // Calculate monthly savings (performance-neutral transfers) using the same logic as MonthlyPNTransfersWidget
