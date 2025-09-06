@@ -191,7 +191,6 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         super(widget, dashboardData);
 
         addConfig(new ReportingPeriodConfig(this));
-        addConfig(new ClientFilterConfig(this));
         addConfig(new FIRENumberConfig(this));
     }
 
@@ -415,14 +414,13 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     private Money calculateMonthlySavings()
     {
         Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
-        Client filteredClient = get(ClientFilterConfig.class).getSelectedFilter()
-                        .filter(getDashboardData().getClient());
+        Client client = getDashboardData().getClient();
         CurrencyConverter converter = getDashboardData().getCurrencyConverter();
 
         long totalTransfers = 0;
 
         // Cash account transactions
-        totalTransfers += filteredClient.getAccounts().stream()
+        totalTransfers += client.getAccounts().stream()
                         .flatMap(account -> account.getTransactions().stream())
                         .filter(t -> interval.contains(t.getDateTime()))
                         .mapToLong(t -> {
@@ -448,7 +446,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                         }).sum();
 
         // Securities account transactions
-        totalTransfers += filteredClient.getPortfolios().stream()
+        totalTransfers += client.getPortfolios().stream()
                         .flatMap(portfolio -> portfolio.getTransactions().stream())
                         .filter(t -> interval.contains(t.getDateTime()))
                         .mapToLong(t -> {
