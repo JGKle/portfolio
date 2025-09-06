@@ -202,36 +202,40 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         container = new Composite(parent, SWT.NONE);
         container.setBackground(parent.getBackground());
         container.setData(UIConstants.CSS.CLASS_NAME, this.getContainerCssClassNames());
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).spacing(10, 5).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).spacing(3, 3).applyTo(container);
 
         title = new Label(container, SWT.NONE);
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
         title.setBackground(Colors.theme().defaultBackground());
         title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.TITLE);
-        GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(title);
+        GridDataFactory.fillDefaults().span(3, 1).grab(true, false).applyTo(title);
 
         // Current Net Worth (first row)
+        new Label(container, SWT.NONE); // Empty sign column
         Label currentValueLbl = new Label(container, SWT.NONE);
         currentValueLbl.setText(Messages.LabelFIRECurrentValue + ":");
         currentValueLbl.setBackground(container.getBackground());
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(currentValueLbl);
 
         currentValueLabel = new ColoredLabel(container, SWT.RIGHT);
         currentValueLabel.setBackground(Colors.theme().defaultBackground());
         currentValueLabel.setText("");
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(currentValueLabel);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(currentValueLabel);
 
         // FIRE Number (second row, editable when clicked)
+        new Label(container, SWT.NONE); // Empty sign column
         Label fireNumberLbl = new Label(container, SWT.NONE);
         fireNumberLbl.setText(Messages.LabelFIRENumber + ":");
         fireNumberLbl.setBackground(container.getBackground());
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(fireNumberLbl);
 
         // Create both label and text field, initially show only label
         fireNumberLabel = new ColoredLabel(container, SWT.RIGHT);
         fireNumberLabel.setBackground(Colors.theme().defaultBackground());
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(fireNumberLabel);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(fireNumberLabel);
         
         fireNumberInput = new Text(container, SWT.BORDER | SWT.RIGHT);
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(fireNumberInput);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(fireNumberInput);
         fireNumberInput.setVisible(false);
         ((org.eclipse.swt.layout.GridData) fireNumberInput.getLayoutData()).exclude = true;
         
@@ -306,44 +310,52 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         });
 
         // Est. Monthly Savings
+        new Label(container, SWT.NONE); // Empty sign column
         Label monthlySavingsLbl = new Label(container, SWT.NONE);
         monthlySavingsLbl.setText(Messages.LabelFIREMonthlySavings + ":");
         monthlySavingsLbl.setBackground(container.getBackground());
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(monthlySavingsLbl);
 
         monthlySavingsLabel = new ColoredLabel(container, SWT.RIGHT);
         monthlySavingsLabel.setBackground(Colors.theme().defaultBackground());
         monthlySavingsLabel.setText("");
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(monthlySavingsLabel);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(monthlySavingsLabel);
 
         // Est. Returns
+        new Label(container, SWT.NONE); // Empty sign column
         Label twrorLbl = new Label(container, SWT.NONE);
         twrorLbl.setText(Messages.LabelFIRETWRoR + ":");
         twrorLbl.setBackground(container.getBackground());
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(twrorLbl);
 
         twrorLabel = new ColoredLabel(container, SWT.RIGHT);
         twrorLabel.setBackground(Colors.theme().defaultBackground());
         twrorLabel.setText("");
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(twrorLabel);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(twrorLabel);
 
         // Years to FIRE
+        new Label(container, SWT.NONE); // Empty sign column
         Label yearsToFireLbl = new Label(container, SWT.NONE);
         yearsToFireLbl.setText(Messages.LabelFIREYearsToFIRE + ":");
         yearsToFireLbl.setBackground(container.getBackground());
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(yearsToFireLbl);
 
         yearsToFireLabel = new ColoredLabel(container, SWT.RIGHT);
         yearsToFireLabel.setBackground(Colors.theme().defaultBackground());
         yearsToFireLabel.setText("");
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(yearsToFireLabel);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(yearsToFireLabel);
 
         // FIRE Date
+        new Label(container, SWT.NONE); // Empty sign column
         Label targetDateLbl = new Label(container, SWT.NONE);
         targetDateLbl.setText(Messages.LabelFIRETargetDate + ":");
         targetDateLbl.setBackground(container.getBackground());
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(targetDateLbl);
 
         targetDateLabel = new ColoredLabel(container, SWT.RIGHT);
         targetDateLabel.setBackground(Colors.theme().defaultBackground());
         targetDateLabel.setText("");
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(targetDateLabel);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(targetDateLabel);
 
         return container;
     }
