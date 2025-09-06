@@ -284,14 +284,14 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         {
             String display = returns != null ? Values.Percent2.format(returns) : Messages.LabelFIREClickToSet;
             manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
-                            new LabelOnly(Messages.LabelFIRETWRoR + ": " + display));
+                            new LabelOnly(Messages.LabelFIREReturns + ": " + display));
         }
 
         @Override
         public String getLabel()
         {
             String display = returns != null ? Values.Percent2.format(returns) : Messages.LabelFIREClickToSet;
-            return Messages.LabelFIRETWRoR + ": " + display;
+            return Messages.LabelFIREReturns + ": " + display;
         }
     }
 
@@ -518,7 +518,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         // Est. Returns (editable when clicked)
         new Label(container, SWT.NONE); // Empty sign column
         Label twrorLbl = new Label(container, SWT.NONE);
-        twrorLbl.setText(Messages.LabelFIRETWRoR + ":");
+        twrorLbl.setText(Messages.LabelFIREReturns + ":");
         twrorLbl.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(twrorLbl);
 
