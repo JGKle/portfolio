@@ -211,10 +211,10 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         currentValueLbl.setText(Messages.LabelFIRECurrentValue + ":");
         currentValueLbl.setBackground(container.getBackground());
 
-        currentValueLabel = new ColoredLabel(container, SWT.NONE);
+        currentValueLabel = new ColoredLabel(container, SWT.RIGHT);
         currentValueLabel.setBackground(Colors.theme().defaultBackground());
         currentValueLabel.setText("");
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(currentValueLabel);
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(currentValueLabel);
 
         // FIRE Number (second row, editable when clicked)
         Label fireNumberLbl = new Label(container, SWT.NONE);
@@ -222,12 +222,12 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         fireNumberLbl.setBackground(container.getBackground());
 
         // Create both label and text field, initially show only label
-        fireNumberLabel = new ColoredLabel(container, SWT.NONE);
+        fireNumberLabel = new ColoredLabel(container, SWT.RIGHT);
         fireNumberLabel.setBackground(Colors.theme().defaultBackground());
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(fireNumberLabel);
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(fireNumberLabel);
         
-        fireNumberInput = new Text(container, SWT.BORDER);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(fireNumberInput);
+        fireNumberInput = new Text(container, SWT.BORDER | SWT.RIGHT);
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(fireNumberInput);
         fireNumberInput.setVisible(false);
         ((org.eclipse.swt.layout.GridData) fireNumberInput.getLayoutData()).exclude = true;
         
@@ -285,40 +285,40 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         monthlySavingsLbl.setText(Messages.LabelFIREMonthlySavings + ":");
         monthlySavingsLbl.setBackground(container.getBackground());
 
-        monthlySavingsLabel = new ColoredLabel(container, SWT.NONE);
+        monthlySavingsLabel = new ColoredLabel(container, SWT.RIGHT);
         monthlySavingsLabel.setBackground(Colors.theme().defaultBackground());
         monthlySavingsLabel.setText("");
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(monthlySavingsLabel);
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(monthlySavingsLabel);
 
         // Est. Returns
         Label twrorLbl = new Label(container, SWT.NONE);
         twrorLbl.setText(Messages.LabelFIRETWRoR + ":");
         twrorLbl.setBackground(container.getBackground());
 
-        twrorLabel = new ColoredLabel(container, SWT.NONE);
+        twrorLabel = new ColoredLabel(container, SWT.RIGHT);
         twrorLabel.setBackground(Colors.theme().defaultBackground());
         twrorLabel.setText("");
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(twrorLabel);
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(twrorLabel);
 
         // Years to FIRE
         Label yearsToFireLbl = new Label(container, SWT.NONE);
         yearsToFireLbl.setText(Messages.LabelFIREYearsToFIRE + ":");
         yearsToFireLbl.setBackground(container.getBackground());
 
-        yearsToFireLabel = new ColoredLabel(container, SWT.NONE);
+        yearsToFireLabel = new ColoredLabel(container, SWT.RIGHT);
         yearsToFireLabel.setBackground(Colors.theme().defaultBackground());
         yearsToFireLabel.setText("");
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(yearsToFireLabel);
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(yearsToFireLabel);
 
         // FIRE Date
         Label targetDateLbl = new Label(container, SWT.NONE);
         targetDateLbl.setText(Messages.LabelFIRETargetDate + ":");
         targetDateLbl.setBackground(container.getBackground());
 
-        targetDateLabel = new ColoredLabel(container, SWT.NONE);
+        targetDateLabel = new ColoredLabel(container, SWT.RIGHT);
         targetDateLabel.setBackground(Colors.theme().defaultBackground());
         targetDateLabel.setText("");
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(targetDateLabel);
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(targetDateLabel);
 
         return container;
     }
