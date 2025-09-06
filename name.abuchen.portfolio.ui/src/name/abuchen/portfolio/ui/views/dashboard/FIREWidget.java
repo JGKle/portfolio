@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -838,7 +839,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         }
         else if (data.getTimeToFire() > 0 && data.getTimeToFire() < 100)
         {
-            timeToFireLabel.setText(String.format("%.1f years", data.getTimeToFire()));
+            timeToFireLabel.setText(MessageFormat.format(Messages.LabelMetricYearsFormatter, data.getTimeToFire()));
             timeToFireLabel.setTextColor(Colors.theme().defaultForeground());
 
             if (data.getTargetDate() != null)
@@ -854,9 +855,9 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         }
         else if (data.getTimeToFire() == 0)
         {
-            timeToFireLabel.setText("FIRE achieved!");
+            timeToFireLabel.setText(Messages.LabelFIREAchieved);
             timeToFireLabel.setTextColor(Colors.theme().greenForeground());
-            targetDateLabel.setText("Today!");
+            targetDateLabel.setText(Messages.LabelToday);
             targetDateLabel.setTextColor(Colors.theme().greenForeground());
         }
         else

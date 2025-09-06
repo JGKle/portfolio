@@ -717,6 +717,7 @@ public class Messages extends NLS
     public static String LabelFIRETimeToFIRE;
     public static String LabelFIREReturns;
     public static String LabelFIREWidget;
+    public static String LabelFIREAchieved;
     public static String LabelFirstDayOfWeek;
     public static String LabelFontSize;
     public static String LabelFormatJSON;
