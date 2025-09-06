@@ -333,7 +333,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         // Current Net Worth (first row)
         new Label(container, SWT.NONE); // Empty sign column
         Label currentValueLbl = new Label(container, SWT.NONE);
-        currentValueLbl.setText(Messages.LabelFIRECurrentValue + ":");
+        currentValueLbl.setText(Messages.LabelFIRECurrentNetWorth + ":");
         currentValueLbl.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(currentValueLbl);
 

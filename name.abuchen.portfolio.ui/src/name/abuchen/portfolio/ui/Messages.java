@@ -710,7 +710,7 @@ public class Messages extends NLS
     public static String LabelFees;
     public static String LabelFeesAccumulated;
     public static String LabelFIREClickToSet;
-    public static String LabelFIRECurrentValue;
+    public static String LabelFIRECurrentNetWorth;
     public static String LabelFIREMonthlySavings;
     public static String LabelFIRENumber;
     public static String LabelFIRETargetDate;
