@@ -11,6 +11,8 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -287,6 +289,19 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             public void focusLost(FocusEvent e)
             {
                 showLabel();
+            }
+        });
+        
+        // Enter key - finish editing
+        fireNumberInput.addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
+                {
+                    showLabel();
+                }
             }
         });
 
