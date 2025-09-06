@@ -9,8 +9,12 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -162,6 +166,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
 
     private Composite container;
     private Label title;
+    private ColoredLabel fireNumberLabel;
     private Text fireNumberInput;
     private ColoredLabel currentValueLabel;
     private ColoredLabel monthlySavingsLabel;
@@ -193,17 +198,37 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.TITLE);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(title);
 
-        // FIRE Number input
+        // FIRE Number (editable when clicked)
         Label fireNumberLbl = new Label(container, SWT.NONE);
         fireNumberLbl.setText(Messages.LabelFIRENumber + ":");
         fireNumberLbl.setBackground(container.getBackground());
 
+        // Create both label and text field, initially show only label
+        fireNumberLabel = new ColoredLabel(container, SWT.NONE);
+        fireNumberLabel.setBackground(Colors.theme().defaultBackground());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(fireNumberLabel);
+        
         fireNumberInput = new Text(container, SWT.BORDER);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(fireNumberInput);
+        fireNumberInput.setVisible(false);
+        ((org.eclipse.swt.layout.GridData) fireNumberInput.getLayoutData()).exclude = true;
         
         Money currentFireNumber = get(FIRENumberConfig.class).getFireNumber();
+        String currency = getDashboardData().getClient().getBaseCurrency();
+        fireNumberLabel.setText(Values.Money.format(currentFireNumber, currency));
         fireNumberInput.setText(Values.Amount.format(currentFireNumber.getAmount()));
         
+        // Click on label to edit
+        fireNumberLabel.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseDown(MouseEvent e)
+            {
+                showTextInput();
+            }
+        });
+        
+        // Handle text input changes
         fireNumberInput.addModifyListener(new ModifyListener()
         {
             @Override
@@ -215,11 +240,25 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                     Long amount = converter.convert(fireNumberInput.getText());
                     Money newFireNumber = Money.of(getDashboardData().getClient().getBaseCurrency(), amount);
                     get(FIRENumberConfig.class).setFireNumber(newFireNumber);
+                    
+                    // Update label display
+                    String currency = getDashboardData().getClient().getBaseCurrency();
+                    fireNumberLabel.setText(Values.Money.format(newFireNumber, currency));
                 }
                 catch (Exception ex)
                 {
                     // Invalid input, keep previous value
                 }
+            }
+        });
+        
+        // Focus lost - hide text input
+        fireNumberInput.addFocusListener(new FocusAdapter()
+        {
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                showLabel();
             }
         });
 
@@ -435,6 +474,30 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         }
         
         return (low + high) / 2.0 / 12.0;
+    }
+
+    private void showTextInput()
+    {
+        fireNumberLabel.setVisible(false);
+        ((org.eclipse.swt.layout.GridData) fireNumberLabel.getLayoutData()).exclude = true;
+        
+        fireNumberInput.setVisible(true);
+        ((org.eclipse.swt.layout.GridData) fireNumberInput.getLayoutData()).exclude = false;
+        
+        container.layout(true);
+        fireNumberInput.setFocus();
+        fireNumberInput.selectAll();
+    }
+    
+    private void showLabel()
+    {
+        fireNumberInput.setVisible(false);
+        ((org.eclipse.swt.layout.GridData) fireNumberInput.getLayoutData()).exclude = true;
+        
+        fireNumberLabel.setVisible(true);
+        ((org.eclipse.swt.layout.GridData) fireNumberLabel.getLayoutData()).exclude = false;
+        
+        container.layout(true);
     }
 
     @Override
