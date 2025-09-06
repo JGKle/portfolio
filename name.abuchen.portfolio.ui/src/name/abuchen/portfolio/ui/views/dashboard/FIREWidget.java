@@ -127,12 +127,12 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 }
                 catch (NumberFormatException e)
                 {
-                    this.fireNumber = Money.of(delegate.getClient().getBaseCurrency(), 1500000_00); // Default $1,500,000
+                    this.fireNumber = null; // No default, show placeholder
                 }
             }
             else
             {
-                this.fireNumber = Money.of(delegate.getClient().getBaseCurrency(), 1500000_00); // Default $1,500,000
+                this.fireNumber = null; // No default, show placeholder
             }
         }
 
@@ -153,14 +153,16 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
+            String display = fireNumber != null ? formatMoneyShort(fireNumber, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
             manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, 
-                            new LabelOnly(Messages.LabelFIRENumber + ": " + formatMoneyShort(fireNumber, delegate.getClient().getBaseCurrency())));
+                            new LabelOnly(Messages.LabelFIRENumber + ": " + display));
         }
 
         @Override
         public String getLabel()
         {
-            return Messages.LabelFIRENumber + ": " + formatMoneyShort(fireNumber, delegate.getClient().getBaseCurrency());
+            String display = fireNumber != null ? formatMoneyShort(fireNumber, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
+            return Messages.LabelFIRENumber + ": " + display;
         }
 
         private String formatMoneyShort(Money money, String currency)
@@ -233,8 +235,16 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         
         Money currentFireNumber = get(FIRENumberConfig.class).getFireNumber();
         String currency = getDashboardData().getClient().getBaseCurrency();
-        fireNumberLabel.setText(formatMoneyShort(currentFireNumber, currency));
-        fireNumberInput.setText(Values.Amount.format(currentFireNumber.getAmount()));
+        if (currentFireNumber != null)
+        {
+            fireNumberLabel.setText(formatMoneyShort(currentFireNumber, currency));
+            fireNumberInput.setText(Values.Amount.format(currentFireNumber.getAmount()));
+        }
+        else
+        {
+            fireNumberLabel.setText(Messages.LabelFIREClickToSet);
+            fireNumberInput.setText("1500000"); // Default for editing
+        }
         
         // Click on label to edit
         fireNumberLabel.addMouseListener(new MouseAdapter()
@@ -355,7 +365,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             data.setMonthlySavings(calculateMonthlySavings());
 
             // Calculate years to FIRE and target date
-            if (data.getCurrentValue() != null && data.getMonthlySavings() != null && data.getTwror() > 0)
+            if (data.getFireNumber() != null && data.getCurrentValue() != null && data.getMonthlySavings() != null && data.getTwror() > 0)
             {
                 double yearsToFire = calculateYearsToFIRE(data.getCurrentValue().getAmount(),
                                 data.getFireNumber().getAmount(), data.getMonthlySavings().getAmount(), data.getTwror());
@@ -554,31 +564,42 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             twrorLabel.setText("-");
         }
 
-        if (data.getYearsToFire() > 0 && data.getYearsToFire() < 100)
+        if (data.getFireNumber() == null)
+        {
+            yearsToFireLabel.setText("-");
+            yearsToFireLabel.setTextColor(Colors.theme().defaultForeground());
+            targetDateLabel.setText("-");
+            targetDateLabel.setTextColor(Colors.theme().defaultForeground());
+        }
+        else if (data.getYearsToFire() > 0 && data.getYearsToFire() < 100)
         {
             yearsToFireLabel.setText(String.format("%.1f years", data.getYearsToFire()));
             yearsToFireLabel.setTextColor(Colors.theme().defaultForeground());
+            
+            if (data.getTargetDate() != null)
+            {
+                DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
+                targetDateLabel.setText(data.getTargetDate().format(formatter));
+                targetDateLabel.setTextColor(Colors.theme().defaultForeground());
+            }
+            else
+            {
+                targetDateLabel.setText("-");
+            }
         }
         else if (data.getYearsToFire() == 0)
         {
             yearsToFireLabel.setText("FIRE achieved!");
             yearsToFireLabel.setTextColor(Colors.theme().greenForeground());
+            targetDateLabel.setText("Today!");
+            targetDateLabel.setTextColor(Colors.theme().greenForeground());
         }
         else
         {
             yearsToFireLabel.setText("∞");
             yearsToFireLabel.setTextColor(Colors.theme().redForeground());
-        }
-
-        if (data.getTargetDate() != null)
-        {
-            DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
-            targetDateLabel.setText(data.getTargetDate().format(formatter));
-            targetDateLabel.setTextColor(Colors.theme().defaultForeground());
-        }
-        else
-        {
             targetDateLabel.setText("-");
+            targetDateLabel.setTextColor(Colors.theme().defaultForeground());
         }
 
         container.layout();

@@ -941,6 +941,7 @@ public class Messages extends NLS
     public static String LabelFIRETWRoR;
     public static String LabelFIREYearsToFIRE;
     public static String LabelFIRETargetDate;
+    public static String LabelFIREClickToSet;
     public static String LabelUnexpectedQuotes;
     public static String LabelUnexpectedQuotes_Description;
     public static String LabelUnhide;
