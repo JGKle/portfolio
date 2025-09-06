@@ -176,13 +176,137 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         }
     }
 
+    private static class FIREMonthlySavingsConfig implements WidgetConfig
+    {
+        private final WidgetDelegate<?> delegate;
+        private Money monthlySavings;
+
+        public FIREMonthlySavingsConfig(WidgetDelegate<?> delegate)
+        {
+            this.delegate = delegate;
+            
+            String monthlySavingsStr = delegate.getWidget().getConfiguration().get(Dashboard.Config.FIRE_MONTHLY_SAVINGS.name());
+            if (monthlySavingsStr != null && !monthlySavingsStr.isEmpty())
+            {
+                try
+                {
+                    long amount = Long.parseLong(monthlySavingsStr);
+                    this.monthlySavings = Money.of(delegate.getClient().getBaseCurrency(), amount);
+                }
+                catch (NumberFormatException e)
+                {
+                    this.monthlySavings = null;
+                }
+            }
+            else
+            {
+                this.monthlySavings = null;
+            }
+        }
+
+        public Money getMonthlySavings()
+        {
+            return monthlySavings;
+        }
+
+        public void setMonthlySavings(Money monthlySavings)
+        {
+            this.monthlySavings = monthlySavings;
+            delegate.getWidget().getConfiguration().put(Dashboard.Config.FIRE_MONTHLY_SAVINGS.name(), 
+                            String.valueOf(monthlySavings.getAmount()));
+            delegate.update();
+            delegate.getClient().touch();
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            String display = monthlySavings != null ? formatMoneyShort(monthlySavings, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
+            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, 
+                            new LabelOnly(Messages.LabelFIREMonthlySavings + ": " + display));
+        }
+
+        @Override
+        public String getLabel()
+        {
+            String display = monthlySavings != null ? formatMoneyShort(monthlySavings, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
+            return Messages.LabelFIREMonthlySavings + ": " + display;
+        }
+
+        private String formatMoneyShort(Money money, String currency)
+        {
+            long roundedAmount = (money.getAmount() / 100) * 100;
+            Money roundedMoney = Money.of(currency, roundedAmount);
+            return Values.Money.format(roundedMoney, currency).replaceAll("\\.00", "");
+        }
+    }
+
+    private static class FIREReturnsConfig implements WidgetConfig
+    {
+        private final WidgetDelegate<?> delegate;
+        private Double returns;
+
+        public FIREReturnsConfig(WidgetDelegate<?> delegate)
+        {
+            this.delegate = delegate;
+            
+            String returnsStr = delegate.getWidget().getConfiguration().get(Dashboard.Config.FIRE_RETURNS.name());
+            if (returnsStr != null && !returnsStr.isEmpty())
+            {
+                try
+                {
+                    this.returns = Double.parseDouble(returnsStr);
+                }
+                catch (NumberFormatException e)
+                {
+                    this.returns = null;
+                }
+            }
+            else
+            {
+                this.returns = null;
+            }
+        }
+
+        public Double getReturns()
+        {
+            return returns;
+        }
+
+        public void setReturns(Double returns)
+        {
+            this.returns = returns;
+            delegate.getWidget().getConfiguration().put(Dashboard.Config.FIRE_RETURNS.name(), 
+                            String.valueOf(returns));
+            delegate.update();
+            delegate.getClient().touch();
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            String display = returns != null ? Values.Percent2.format(returns) : Messages.LabelFIREClickToSet;
+            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, 
+                            new LabelOnly(Messages.LabelFIRETWRoR + ": " + display));
+        }
+
+        @Override
+        public String getLabel()
+        {
+            String display = returns != null ? Values.Percent2.format(returns) : Messages.LabelFIREClickToSet;
+            return Messages.LabelFIRETWRoR + ": " + display;
+        }
+    }
+
     private Composite container;
     private Label title;
     private ColoredLabel fireNumberLabel;
     private Text fireNumberInput;
     private ColoredLabel currentValueLabel;
     private ColoredLabel monthlySavingsLabel;
+    private Text monthlySavingsInput;
     private ColoredLabel twrorLabel;
+    private Text twrorInput;
     private ColoredLabel yearsToFireLabel;
     private ColoredLabel targetDateLabel;
 
@@ -192,6 +316,8 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
 
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new FIRENumberConfig(this));
+        addConfig(new FIREMonthlySavingsConfig(this));
+        addConfig(new FIREReturnsConfig(this));
     }
 
     @Override
@@ -307,29 +433,175 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             }
         });
 
-        // Est. Monthly Savings
+        // Est. Monthly Savings (editable when clicked)
         new Label(container, SWT.NONE); // Empty sign column
         Label monthlySavingsLbl = new Label(container, SWT.NONE);
         monthlySavingsLbl.setText(Messages.LabelFIREMonthlySavings + ":");
         monthlySavingsLbl.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(monthlySavingsLbl);
 
+        // Create both label and text field, initially show only label
         monthlySavingsLabel = new ColoredLabel(container, SWT.RIGHT);
         monthlySavingsLabel.setBackground(Colors.theme().defaultBackground());
-        monthlySavingsLabel.setText("");
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(monthlySavingsLabel);
+        
+        monthlySavingsInput = new Text(container, SWT.BORDER | SWT.RIGHT);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(monthlySavingsInput);
+        monthlySavingsInput.setVisible(false);
+        ((org.eclipse.swt.layout.GridData) monthlySavingsInput.getLayoutData()).exclude = true;
+        
+        Money currentMonthlySavings = get(FIREMonthlySavingsConfig.class).getMonthlySavings();
+        if (currentMonthlySavings != null)
+        {
+            monthlySavingsLabel.setText(formatMoneyShort(currentMonthlySavings, currency));
+            monthlySavingsInput.setText(Values.Amount.format(currentMonthlySavings.getAmount()));
+        }
+        else
+        {
+            monthlySavingsLabel.setText(Messages.LabelFIREClickToSet);
+            monthlySavingsInput.setText("500000"); // Default $5000 for editing
+        }
+        
+        // Click on label to edit
+        monthlySavingsLabel.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseDown(MouseEvent e)
+            {
+                showMonthlySavingsInput();
+            }
+        });
+        
+        // Handle text input changes
+        monthlySavingsInput.addModifyListener(new ModifyListener()
+        {
+            @Override
+            public void modifyText(ModifyEvent e)
+            {
+                try
+                {
+                    StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount);
+                    Long amount = converter.convert(monthlySavingsInput.getText());
+                    Money newMonthlySavings = Money.of(getDashboardData().getClient().getBaseCurrency(), amount);
+                    get(FIREMonthlySavingsConfig.class).setMonthlySavings(newMonthlySavings);
+                    
+                    // Update label display
+                    String currency = getDashboardData().getClient().getBaseCurrency();
+                    monthlySavingsLabel.setText(formatMoneyShort(newMonthlySavings, currency));
+                }
+                catch (Exception ex)
+                {
+                    // Invalid input, keep previous value
+                }
+            }
+        });
+        
+        // Focus lost - hide text input
+        monthlySavingsInput.addFocusListener(new FocusAdapter()
+        {
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                showMonthlySavingsLabel();
+            }
+        });
+        
+        // Enter key - finish editing
+        monthlySavingsInput.addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
+                {
+                    showMonthlySavingsLabel();
+                }
+            }
+        });
 
-        // Est. Returns
+        // Est. Returns (editable when clicked)
         new Label(container, SWT.NONE); // Empty sign column
         Label twrorLbl = new Label(container, SWT.NONE);
         twrorLbl.setText(Messages.LabelFIRETWRoR + ":");
         twrorLbl.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(twrorLbl);
 
+        // Create both label and text field, initially show only label
         twrorLabel = new ColoredLabel(container, SWT.RIGHT);
         twrorLabel.setBackground(Colors.theme().defaultBackground());
-        twrorLabel.setText("");
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(twrorLabel);
+        
+        twrorInput = new Text(container, SWT.BORDER | SWT.RIGHT);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(twrorInput);
+        twrorInput.setVisible(false);
+        ((org.eclipse.swt.layout.GridData) twrorInput.getLayoutData()).exclude = true;
+        
+        Double currentReturns = get(FIREReturnsConfig.class).getReturns();
+        if (currentReturns != null)
+        {
+            twrorLabel.setText(Values.Percent2.format(currentReturns));
+            twrorInput.setText(Values.Percent.format(currentReturns));
+        }
+        else
+        {
+            twrorLabel.setText(Messages.LabelFIREClickToSet);
+            twrorInput.setText("7.0"); // Default 7% for editing
+        }
+        
+        // Click on label to edit
+        twrorLabel.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseDown(MouseEvent e)
+            {
+                showReturnsInput();
+            }
+        });
+        
+        // Handle text input changes
+        twrorInput.addModifyListener(new ModifyListener()
+        {
+            @Override
+            public void modifyText(ModifyEvent e)
+            {
+                try
+                {
+                    String text = twrorInput.getText().replace("%", "");
+                    Double returns = Double.parseDouble(text) / 100.0; // Convert percentage to decimal
+                    get(FIREReturnsConfig.class).setReturns(returns);
+                    
+                    // Update label display
+                    twrorLabel.setText(Values.Percent2.format(returns));
+                }
+                catch (Exception ex)
+                {
+                    // Invalid input, keep previous value
+                }
+            }
+        });
+        
+        // Focus lost - hide text input
+        twrorInput.addFocusListener(new FocusAdapter()
+        {
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                showReturnsLabel();
+            }
+        });
+        
+        // Enter key - finish editing
+        twrorInput.addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
+                {
+                    showReturnsLabel();
+                }
+            }
+        });
 
         // Years to FIRE
         new Label(container, SWT.NONE); // Empty sign column
@@ -390,8 +662,20 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 }
             }
 
-            // Calculate monthly savings (performance-neutral transfers) using the same logic as MonthlyPNTransfersWidget
-            data.setMonthlySavings(calculateMonthlySavings());
+            // Get user input monthly savings and returns
+            data.setMonthlySavings(get(FIREMonthlySavingsConfig.class).getMonthlySavings());
+            Double userReturns = get(FIREReturnsConfig.class).getReturns();
+            if (userReturns != null)
+            {
+                data.setTwror(userReturns);
+            }
+            else if (!availableSeries.isEmpty())
+            {
+                // Fallback to calculated returns if user hasn't set custom value
+                PerformanceIndex index = getDashboardData().calculate(availableSeries.get(0),
+                                get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
+                data.setTwror(index.getFinalAccumulatedAnnualizedPercentage());
+            }
 
             // Calculate years to FIRE and target date
             if (data.getFireNumber() != null && data.getCurrentValue() != null && data.getMonthlySavings() != null && data.getTwror() > 0)
@@ -411,73 +695,6 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         };
     }
 
-    private Money calculateMonthlySavings()
-    {
-        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
-        Client client = getDashboardData().getClient();
-        CurrencyConverter converter = getDashboardData().getCurrencyConverter();
-
-        long totalTransfers = 0;
-
-        // Cash account transactions
-        totalTransfers += client.getAccounts().stream()
-                        .flatMap(account -> account.getTransactions().stream())
-                        .filter(t -> interval.contains(t.getDateTime()))
-                        .mapToLong(t -> {
-                            long value = 0;
-                            switch (t.getType())
-                            {
-                                case DEPOSIT:
-                                    value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
-                                    break;
-                                case REMOVAL:
-                                    value = -t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
-                                    break;
-                                case TRANSFER_IN:
-                                    value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
-                                    break;
-                                case TRANSFER_OUT:
-                                    value = -t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
-                                    break;
-                                default:
-                                    return 0;
-                            }
-                            return value;
-                        }).sum();
-
-        // Securities account transactions
-        totalTransfers += client.getPortfolios().stream()
-                        .flatMap(portfolio -> portfolio.getTransactions().stream())
-                        .filter(t -> interval.contains(t.getDateTime()))
-                        .mapToLong(t -> {
-                            long value = 0;
-                            switch (t.getType())
-                            {
-                                case DELIVERY_INBOUND:
-                                    value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
-                                    break;
-                                case DELIVERY_OUTBOUND:
-                                    value = -t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
-                                    break;
-                                case TRANSFER_IN:
-                                    value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
-                                    break;
-                                case TRANSFER_OUT:
-                                    value = -t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
-                                    break;
-                                default:
-                                    return 0;
-                            }
-                            return value;
-                        }).sum();
-
-        // Convert to monthly average
-        long monthsInPeriod = interval.getDays() / 30; // approximate
-        if (monthsInPeriod == 0) monthsInPeriod = 1;
-        long monthlySavings = totalTransfers / monthsInPeriod;
-
-        return Money.of(getDashboardData().getClient().getBaseCurrency(), monthlySavings);
-    }
 
     private double calculateYearsToFIRE(long currentValue, long fireNumber, long monthlySavings, double annualReturn)
     {
@@ -545,6 +762,54 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         
         container.layout(true);
     }
+    
+    private void showMonthlySavingsInput()
+    {
+        monthlySavingsLabel.setVisible(false);
+        ((org.eclipse.swt.layout.GridData) monthlySavingsLabel.getLayoutData()).exclude = true;
+        
+        monthlySavingsInput.setVisible(true);
+        ((org.eclipse.swt.layout.GridData) monthlySavingsInput.getLayoutData()).exclude = false;
+        
+        container.layout(true);
+        monthlySavingsInput.setFocus();
+        monthlySavingsInput.selectAll();
+    }
+    
+    private void showMonthlySavingsLabel()
+    {
+        monthlySavingsInput.setVisible(false);
+        ((org.eclipse.swt.layout.GridData) monthlySavingsInput.getLayoutData()).exclude = true;
+        
+        monthlySavingsLabel.setVisible(true);
+        ((org.eclipse.swt.layout.GridData) monthlySavingsLabel.getLayoutData()).exclude = false;
+        
+        container.layout(true);
+    }
+    
+    private void showReturnsInput()
+    {
+        twrorLabel.setVisible(false);
+        ((org.eclipse.swt.layout.GridData) twrorLabel.getLayoutData()).exclude = true;
+        
+        twrorInput.setVisible(true);
+        ((org.eclipse.swt.layout.GridData) twrorInput.getLayoutData()).exclude = false;
+        
+        container.layout(true);
+        twrorInput.setFocus();
+        twrorInput.selectAll();
+    }
+    
+    private void showReturnsLabel()
+    {
+        twrorInput.setVisible(false);
+        ((org.eclipse.swt.layout.GridData) twrorInput.getLayoutData()).exclude = true;
+        
+        twrorLabel.setVisible(true);
+        ((org.eclipse.swt.layout.GridData) twrorLabel.getLayoutData()).exclude = false;
+        
+        container.layout(true);
+    }
 
     private String formatMoneyShort(Money money, String currency)
     {
@@ -570,26 +835,32 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             currentValueLabel.setText("-");
         }
 
-        if (data.getMonthlySavings() != null)
+        // Update monthly savings display only if user hasn't set a custom value
+        Money userMonthlySavings = get(FIREMonthlySavingsConfig.class).getMonthlySavings();
+        if (userMonthlySavings != null)
         {
-            monthlySavingsLabel.setText(formatMoneyShort(data.getMonthlySavings(), currency));
-            monthlySavingsLabel.setTextColor(data.getMonthlySavings().isNegative() ? 
+            monthlySavingsLabel.setText(formatMoneyShort(userMonthlySavings, currency));
+            monthlySavingsLabel.setTextColor(userMonthlySavings.isNegative() ? 
                             Colors.theme().redForeground() : Colors.theme().greenForeground());
         }
         else
         {
-            monthlySavingsLabel.setText("-");
+            monthlySavingsLabel.setText(Messages.LabelFIREClickToSet);
+            monthlySavingsLabel.setTextColor(Colors.theme().defaultForeground());
         }
 
-        if (data.getTwror() != 0)
+        // Update returns display only if user hasn't set a custom value
+        Double userReturns = get(FIREReturnsConfig.class).getReturns();
+        if (userReturns != null)
         {
-            twrorLabel.setText(Values.Percent2.format(data.getTwror()));
-            twrorLabel.setTextColor(data.getTwror() < 0 ? 
+            twrorLabel.setText(Values.Percent2.format(userReturns));
+            twrorLabel.setTextColor(userReturns < 0 ? 
                             Colors.theme().redForeground() : Colors.theme().greenForeground());
         }
         else
         {
-            twrorLabel.setText("-");
+            twrorLabel.setText(Messages.LabelFIREClickToSet);
+            twrorLabel.setTextColor(Colors.theme().defaultForeground());
         }
 
         if (data.getFireNumber() == null)
