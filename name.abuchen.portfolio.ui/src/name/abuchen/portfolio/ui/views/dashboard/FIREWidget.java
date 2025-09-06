@@ -116,7 +116,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         public FIRENumberConfig(WidgetDelegate<?> delegate)
         {
             this.delegate = delegate;
-            
+
             String fireNumberStr = delegate.getWidget().getConfiguration().get(Dashboard.Config.FIRE_NUMBER.name());
             if (fireNumberStr != null && !fireNumberStr.isEmpty())
             {
@@ -144,7 +144,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         public void setFireNumber(Money fireNumber)
         {
             this.fireNumber = fireNumber;
-            delegate.getWidget().getConfiguration().put(Dashboard.Config.FIRE_NUMBER.name(), 
+            delegate.getWidget().getConfiguration().put(Dashboard.Config.FIRE_NUMBER.name(),
                             String.valueOf(fireNumber.getAmount()));
             delegate.update();
             delegate.getClient().touch();
@@ -153,15 +153,21 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            String display = fireNumber != null ? ((FIREWidget)delegate).formatMoneyShort(fireNumber, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
-            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, 
+            String display = fireNumber != null
+                            ? ((FIREWidget) delegate).formatMoneyShort(fireNumber,
+                                            delegate.getClient().getBaseCurrency())
+                            : Messages.LabelFIREClickToSet;
+            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
                             new LabelOnly(Messages.LabelFIRENumber + ": " + display));
         }
 
         @Override
         public String getLabel()
         {
-            String display = fireNumber != null ? ((FIREWidget)delegate).formatMoneyShort(fireNumber, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
+            String display = fireNumber != null
+                            ? ((FIREWidget) delegate).formatMoneyShort(fireNumber,
+                                            delegate.getClient().getBaseCurrency())
+                            : Messages.LabelFIREClickToSet;
             return Messages.LabelFIRENumber + ": " + display;
         }
 
@@ -175,8 +181,9 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         public FIREMonthlySavingsConfig(WidgetDelegate<?> delegate)
         {
             this.delegate = delegate;
-            
-            String monthlySavingsStr = delegate.getWidget().getConfiguration().get(Dashboard.Config.FIRE_MONTHLY_SAVINGS.name());
+
+            String monthlySavingsStr = delegate.getWidget().getConfiguration()
+                            .get(Dashboard.Config.FIRE_MONTHLY_SAVINGS.name());
             if (monthlySavingsStr != null && !monthlySavingsStr.isEmpty())
             {
                 try
@@ -203,7 +210,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         public void setMonthlySavings(Money monthlySavings)
         {
             this.monthlySavings = monthlySavings;
-            delegate.getWidget().getConfiguration().put(Dashboard.Config.FIRE_MONTHLY_SAVINGS.name(), 
+            delegate.getWidget().getConfiguration().put(Dashboard.Config.FIRE_MONTHLY_SAVINGS.name(),
                             String.valueOf(monthlySavings.getAmount()));
             delegate.update();
             delegate.getClient().touch();
@@ -212,15 +219,21 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            String display = monthlySavings != null ? ((FIREWidget)delegate).formatMoneyShort(monthlySavings, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
-            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, 
+            String display = monthlySavings != null
+                            ? ((FIREWidget) delegate).formatMoneyShort(monthlySavings,
+                                            delegate.getClient().getBaseCurrency())
+                            : Messages.LabelFIREClickToSet;
+            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
                             new LabelOnly(Messages.LabelFIREMonthlySavings + ": " + display));
         }
 
         @Override
         public String getLabel()
         {
-            String display = monthlySavings != null ? ((FIREWidget)delegate).formatMoneyShort(monthlySavings, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
+            String display = monthlySavings != null
+                            ? ((FIREWidget) delegate).formatMoneyShort(monthlySavings,
+                                            delegate.getClient().getBaseCurrency())
+                            : Messages.LabelFIREClickToSet;
             return Messages.LabelFIREMonthlySavings + ": " + display;
         }
 
@@ -234,7 +247,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         public FIREReturnsConfig(WidgetDelegate<?> delegate)
         {
             this.delegate = delegate;
-            
+
             String returnsStr = delegate.getWidget().getConfiguration().get(Dashboard.Config.FIRE_RETURNS.name());
             if (returnsStr != null && !returnsStr.isEmpty())
             {
@@ -261,8 +274,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         public void setReturns(Double returns)
         {
             this.returns = returns;
-            delegate.getWidget().getConfiguration().put(Dashboard.Config.FIRE_RETURNS.name(), 
-                            String.valueOf(returns));
+            delegate.getWidget().getConfiguration().put(Dashboard.Config.FIRE_RETURNS.name(), String.valueOf(returns));
             delegate.update();
             delegate.getClient().touch();
         }
@@ -271,7 +283,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         public void menuAboutToShow(IMenuManager manager)
         {
             String display = returns != null ? Values.Percent2.format(returns) : Messages.LabelFIREClickToSet;
-            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, 
+            manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME,
                             new LabelOnly(Messages.LabelFIRETWRoR + ": " + display));
         }
 
@@ -341,12 +353,12 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         fireNumberLabel = new ColoredLabel(container, SWT.RIGHT);
         fireNumberLabel.setBackground(Colors.theme().defaultBackground());
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(fireNumberLabel);
-        
+
         fireNumberInput = new Text(container, SWT.BORDER | SWT.RIGHT);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(fireNumberInput);
         fireNumberInput.setVisible(false);
         ((org.eclipse.swt.layout.GridData) fireNumberInput.getLayoutData()).exclude = true;
-        
+
         Money currentFireNumber = get(FIRENumberConfig.class).getFireNumber();
         String currency = getDashboardData().getClient().getBaseCurrency();
         if (currentFireNumber != null)
@@ -359,7 +371,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             fireNumberLabel.setText(Messages.LabelFIREClickToSet);
             fireNumberInput.setText("1500000"); // Default for editing
         }
-        
+
         // Click on label to edit
         fireNumberLabel.addMouseListener(new MouseAdapter()
         {
@@ -369,7 +381,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 showInput(fireNumberLabel, fireNumberInput);
             }
         });
-        
+
         // Handle text input changes
         fireNumberInput.addModifyListener(new ModifyListener()
         {
@@ -382,7 +394,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                     Long amount = converter.convert(fireNumberInput.getText());
                     Money newFireNumber = Money.of(getDashboardData().getClient().getBaseCurrency(), amount);
                     get(FIRENumberConfig.class).setFireNumber(newFireNumber);
-                    
+
                     // Update label display
                     String currency = getDashboardData().getClient().getBaseCurrency();
                     fireNumberLabel.setText(formatMoneyShort(newFireNumber, currency));
@@ -393,7 +405,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 }
             }
         });
-        
+
         // Focus lost - hide text input
         fireNumberInput.addFocusListener(new FocusAdapter()
         {
@@ -403,7 +415,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 showLabel(fireNumberLabel, fireNumberInput);
             }
         });
-        
+
         // Enter key - finish editing
         fireNumberInput.addKeyListener(new KeyAdapter()
         {
@@ -428,12 +440,12 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         monthlySavingsLabel = new ColoredLabel(container, SWT.RIGHT);
         monthlySavingsLabel.setBackground(Colors.theme().defaultBackground());
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(monthlySavingsLabel);
-        
+
         monthlySavingsInput = new Text(container, SWT.BORDER | SWT.RIGHT);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(monthlySavingsInput);
         monthlySavingsInput.setVisible(false);
         ((org.eclipse.swt.layout.GridData) monthlySavingsInput.getLayoutData()).exclude = true;
-        
+
         Money currentMonthlySavings = get(FIREMonthlySavingsConfig.class).getMonthlySavings();
         if (currentMonthlySavings != null)
         {
@@ -445,7 +457,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             monthlySavingsLabel.setText(Messages.LabelFIREClickToSet);
             monthlySavingsInput.setText("500000"); // Default $5000 for editing
         }
-        
+
         // Click on label to edit
         monthlySavingsLabel.addMouseListener(new MouseAdapter()
         {
@@ -455,7 +467,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 showInput(monthlySavingsLabel, monthlySavingsInput);
             }
         });
-        
+
         // Handle text input changes
         monthlySavingsInput.addModifyListener(new ModifyListener()
         {
@@ -468,7 +480,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                     Long amount = converter.convert(monthlySavingsInput.getText());
                     Money newMonthlySavings = Money.of(getDashboardData().getClient().getBaseCurrency(), amount);
                     get(FIREMonthlySavingsConfig.class).setMonthlySavings(newMonthlySavings);
-                    
+
                     // Update label display
                     String currency = getDashboardData().getClient().getBaseCurrency();
                     monthlySavingsLabel.setText(formatMoneyShort(newMonthlySavings, currency));
@@ -479,7 +491,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 }
             }
         });
-        
+
         // Focus lost - hide text input
         monthlySavingsInput.addFocusListener(new FocusAdapter()
         {
@@ -489,7 +501,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 showLabel(monthlySavingsLabel, monthlySavingsInput);
             }
         });
-        
+
         // Enter key - finish editing
         monthlySavingsInput.addKeyListener(new KeyAdapter()
         {
@@ -514,12 +526,12 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         twrorLabel = new ColoredLabel(container, SWT.RIGHT);
         twrorLabel.setBackground(Colors.theme().defaultBackground());
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(twrorLabel);
-        
+
         twrorInput = new Text(container, SWT.BORDER | SWT.RIGHT);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(twrorInput);
         twrorInput.setVisible(false);
         ((org.eclipse.swt.layout.GridData) twrorInput.getLayoutData()).exclude = true;
-        
+
         Double currentReturns = get(FIREReturnsConfig.class).getReturns();
         if (currentReturns != null)
         {
@@ -531,7 +543,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             twrorLabel.setText(Messages.LabelFIREClickToSet);
             twrorInput.setText("7.0"); // Default 7% for editing
         }
-        
+
         // Click on label to edit
         twrorLabel.addMouseListener(new MouseAdapter()
         {
@@ -541,7 +553,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 showInput(twrorLabel, twrorInput);
             }
         });
-        
+
         // Handle text input changes
         twrorInput.addModifyListener(new ModifyListener()
         {
@@ -551,9 +563,12 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 try
                 {
                     String text = twrorInput.getText().replace("%", "");
-                    Double returns = Double.parseDouble(text) / 100.0; // Convert percentage to decimal
+                    Double returns = Double.parseDouble(text) / 100.0; // Convert
+                                                                       // percentage
+                                                                       // to
+                                                                       // decimal
                     get(FIREReturnsConfig.class).setReturns(returns);
-                    
+
                     // Update label display
                     twrorLabel.setText(Values.Percent2.format(returns));
                 }
@@ -563,7 +578,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 }
             }
         });
-        
+
         // Focus lost - hide text input
         twrorInput.addFocusListener(new FocusAdapter()
         {
@@ -573,7 +588,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 showLabel(twrorLabel, twrorInput);
             }
         });
-        
+
         // Enter key - finish editing
         twrorInput.addKeyListener(new KeyAdapter()
         {
@@ -629,7 +644,8 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             // Get user input FIRE number
             data.setFireNumber(get(FIRENumberConfig.class).getFireNumber());
 
-            // Calculate current portfolio value using the first (default) data series
+            // Calculate current portfolio value using the first (default) data
+            // series
             var availableSeries = getDashboardData().getDataSeriesSet().getAvailableSeries();
             if (!availableSeries.isEmpty())
             {
@@ -637,7 +653,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 LocalDate now = LocalDate.now();
                 Interval interval = Interval.of(now.minusYears(1), now);
                 PerformanceIndex index = getDashboardData().calculate(availableSeries.get(0), interval);
-                
+
                 long[] totals = index.getTotals();
                 if (totals.length > 0)
                 {
@@ -654,7 +670,8 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             }
             else if (!availableSeries.isEmpty())
             {
-                // Fallback to calculated returns if user hasn't set custom value
+                // Fallback to calculated returns if user hasn't set custom
+                // value
                 LocalDate now = LocalDate.now();
                 Interval interval = Interval.of(now.minusYears(1), now);
                 PerformanceIndex index = getDashboardData().calculate(availableSeries.get(0), interval);
@@ -662,12 +679,14 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             }
 
             // Calculate years to FIRE and target date
-            if (data.getFireNumber() != null && data.getCurrentValue() != null && data.getMonthlySavings() != null && data.getTwror() > 0)
+            if (data.getFireNumber() != null && data.getCurrentValue() != null && data.getMonthlySavings() != null
+                            && data.getTwror() > 0)
             {
                 double yearsToFire = calculateYearsToFIRE(data.getCurrentValue().getAmount(),
-                                data.getFireNumber().getAmount(), data.getMonthlySavings().getAmount(), data.getTwror());
+                                data.getFireNumber().getAmount(), data.getMonthlySavings().getAmount(),
+                                data.getTwror());
                 data.setYearsToFire(yearsToFire);
-                
+
                 if (yearsToFire > 0 && yearsToFire < 100) // reasonable bounds
                 {
                     long daysToAdd = Math.round(yearsToFire * 365.25);
@@ -679,25 +698,26 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         };
     }
 
-
     private double calculateYearsToFIRE(long currentValue, long fireNumber, long monthlySavings, double annualReturn)
     {
-        if (currentValue >= fireNumber) 
+        if (currentValue >= fireNumber)
             return 0;
-        
+
         if (monthlySavings <= 0)
             return Double.POSITIVE_INFINITY;
 
         double monthlyReturn = Math.pow(1.0 + annualReturn, 1.0 / 12.0) - 1.0;
-        
+
         if (monthlyReturn <= 0)
         {
             // Simple linear calculation if no growth
-            return (double)(fireNumber - currentValue) / (monthlySavings * 12);
+            return (double) (fireNumber - currentValue) / (monthlySavings * 12);
         }
 
-        // Future value formula: FV = PV × (1 + r)^n + PMT × [((1 + r)^n - 1) / r]
-        // This requires numerical solution since it can't be solved algebraically
+        // Future value formula: FV = PV × (1 + r)^n + PMT × [((1 + r)^n - 1) /
+        // r]
+        // This requires numerical solution since it can't be solved
+        // algebraically
         double pv = currentValue;
         double fv = fireNumber;
         double pmt = monthlySavings;
@@ -707,19 +727,23 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         double low = 0;
         double high = 600; // max 50 years
         double epsilon = 0.01; // precision to 0.01 months
-        
-        while (high - low > epsilon) {
+
+        while (high - low > epsilon)
+        {
             double mid = (low + high) / 2.0;
             double powerTerm = Math.pow(1 + r, mid);
             double calculatedFV = pv * powerTerm + pmt * ((powerTerm - 1) / r);
-            
-            if (calculatedFV < fv) {
+
+            if (calculatedFV < fv)
+            {
                 low = mid;
-            } else {
+            }
+            else
+            {
                 high = mid;
             }
         }
-        
+
         return (low + high) / 2.0 / 12.0;
     }
 
@@ -727,31 +751,32 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     {
         label.setVisible(false);
         ((org.eclipse.swt.layout.GridData) label.getLayoutData()).exclude = true;
-        
+
         input.setVisible(true);
         ((org.eclipse.swt.layout.GridData) input.getLayoutData()).exclude = false;
-        
+
         container.layout(true);
         input.setFocus();
         input.selectAll();
     }
-    
+
     private void showLabel(ColoredLabel label, Text input)
     {
         input.setVisible(false);
         ((org.eclipse.swt.layout.GridData) input.getLayoutData()).exclude = true;
-        
+
         label.setVisible(true);
         ((org.eclipse.swt.layout.GridData) label.getLayoutData()).exclude = false;
-        
+
         container.layout(true);
     }
 
-
     private String formatMoneyShort(Money money, String currency)
     {
-        // Create a Money object with rounded amount (no cents) and format normally
-        long roundedAmount = (money.getAmount() / 100) * 100; // Round to nearest dollar
+        // Create a Money object with rounded amount (no cents) and format
+        // normally
+        long roundedAmount = (money.getAmount() / 100) * 100; // Round to
+                                                              // nearest dollar
         Money roundedMoney = Money.of(currency, roundedAmount);
         return Values.Money.format(roundedMoney, currency).replaceAll("\\.00", "");
     }
@@ -777,8 +802,8 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         if (userMonthlySavings != null)
         {
             monthlySavingsLabel.setText(formatMoneyShort(userMonthlySavings, currency));
-            monthlySavingsLabel.setTextColor(userMonthlySavings.isNegative() ? 
-                            Colors.theme().redForeground() : Colors.theme().greenForeground());
+            monthlySavingsLabel.setTextColor(userMonthlySavings.isNegative() ? Colors.theme().redForeground()
+                            : Colors.theme().greenForeground());
         }
         else
         {
@@ -791,8 +816,8 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         if (userReturns != null)
         {
             twrorLabel.setText(Values.Percent2.format(userReturns));
-            twrorLabel.setTextColor(userReturns < 0 ? 
-                            Colors.theme().redForeground() : Colors.theme().greenForeground());
+            twrorLabel.setTextColor(
+                            userReturns < 0 ? Colors.theme().redForeground() : Colors.theme().greenForeground());
         }
         else
         {
@@ -811,7 +836,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         {
             yearsToFireLabel.setText(String.format("%.1f years", data.getYearsToFire()));
             yearsToFireLabel.setTextColor(Colors.theme().defaultForeground());
-            
+
             if (data.getTargetDate() != null)
             {
                 DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
