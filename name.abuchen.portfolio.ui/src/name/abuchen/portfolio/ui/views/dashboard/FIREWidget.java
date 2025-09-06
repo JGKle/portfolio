@@ -154,13 +154,21 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         public void menuAboutToShow(IMenuManager manager)
         {
             manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, 
-                            new LabelOnly(Messages.LabelFIRENumber + ": " + Values.Money.format(fireNumber)));
+                            new LabelOnly(Messages.LabelFIRENumber + ": " + formatMoneyShort(fireNumber, delegate.getClient().getBaseCurrency())));
         }
 
         @Override
         public String getLabel()
         {
-            return Messages.LabelFIRENumber + ": " + Values.Money.format(fireNumber);
+            return Messages.LabelFIRENumber + ": " + formatMoneyShort(fireNumber, delegate.getClient().getBaseCurrency());
+        }
+
+        private String formatMoneyShort(Money money, String currency)
+        {
+            // Create a Money object with rounded amount (no cents) and format normally
+            long roundedAmount = (money.getAmount() / 100) * 100; // Round to nearest dollar
+            Money roundedMoney = Money.of(currency, roundedAmount);
+            return Values.Money.format(roundedMoney, currency).replaceAll("\\.00", "");
         }
     }
 
@@ -198,7 +206,17 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.TITLE);
         GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(title);
 
-        // FIRE Number (editable when clicked)
+        // Current Net Worth (first row)
+        Label currentValueLbl = new Label(container, SWT.NONE);
+        currentValueLbl.setText(Messages.LabelFIRECurrentValue + ":");
+        currentValueLbl.setBackground(container.getBackground());
+
+        currentValueLabel = new ColoredLabel(container, SWT.NONE);
+        currentValueLabel.setBackground(Colors.theme().defaultBackground());
+        currentValueLabel.setText("");
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(currentValueLabel);
+
+        // FIRE Number (second row, editable when clicked)
         Label fireNumberLbl = new Label(container, SWT.NONE);
         fireNumberLbl.setText(Messages.LabelFIRENumber + ":");
         fireNumberLbl.setBackground(container.getBackground());
@@ -215,7 +233,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         
         Money currentFireNumber = get(FIRENumberConfig.class).getFireNumber();
         String currency = getDashboardData().getClient().getBaseCurrency();
-        fireNumberLabel.setText(Values.Money.format(currentFireNumber, currency));
+        fireNumberLabel.setText(formatMoneyShort(currentFireNumber, currency));
         fireNumberInput.setText(Values.Amount.format(currentFireNumber.getAmount()));
         
         // Click on label to edit
@@ -243,7 +261,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                     
                     // Update label display
                     String currency = getDashboardData().getClient().getBaseCurrency();
-                    fireNumberLabel.setText(Values.Money.format(newFireNumber, currency));
+                    fireNumberLabel.setText(formatMoneyShort(newFireNumber, currency));
                 }
                 catch (Exception ex)
                 {
@@ -262,17 +280,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             }
         });
 
-        // Current Value
-        Label currentValueLbl = new Label(container, SWT.NONE);
-        currentValueLbl.setText(Messages.LabelFIRECurrentValue + ":");
-        currentValueLbl.setBackground(container.getBackground());
-
-        currentValueLabel = new ColoredLabel(container, SWT.NONE);
-        currentValueLabel.setBackground(Colors.theme().defaultBackground());
-        currentValueLabel.setText("");
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(currentValueLabel);
-
-        // Monthly Savings
+        // Est. Monthly Savings
         Label monthlySavingsLbl = new Label(container, SWT.NONE);
         monthlySavingsLbl.setText(Messages.LabelFIREMonthlySavings + ":");
         monthlySavingsLbl.setBackground(container.getBackground());
@@ -282,7 +290,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         monthlySavingsLabel.setText("");
         GridDataFactory.fillDefaults().grab(true, false).applyTo(monthlySavingsLabel);
 
-        // TWRoR
+        // Est. Returns
         Label twrorLbl = new Label(container, SWT.NONE);
         twrorLbl.setText(Messages.LabelFIRETWRoR + ":");
         twrorLbl.setBackground(container.getBackground());
@@ -302,7 +310,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         yearsToFireLabel.setText("");
         GridDataFactory.fillDefaults().grab(true, false).applyTo(yearsToFireLabel);
 
-        // Target Date
+        // FIRE Date
         Label targetDateLbl = new Label(container, SWT.NONE);
         targetDateLbl.setText(Messages.LabelFIRETargetDate + ":");
         targetDateLbl.setBackground(container.getBackground());
@@ -500,6 +508,14 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         container.layout(true);
     }
 
+    private String formatMoneyShort(Money money, String currency)
+    {
+        // Create a Money object with rounded amount (no cents) and format normally
+        long roundedAmount = (money.getAmount() / 100) * 100; // Round to nearest dollar
+        Money roundedMoney = Money.of(currency, roundedAmount);
+        return Values.Money.format(roundedMoney, currency).replaceAll("\\.00", "");
+    }
+
     @Override
     public void update(FIREData data)
     {
@@ -509,7 +525,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
 
         if (data.getCurrentValue() != null)
         {
-            currentValueLabel.setText(Values.Money.format(data.getCurrentValue(), currency));
+            currentValueLabel.setText(formatMoneyShort(data.getCurrentValue(), currency));
         }
         else
         {
@@ -518,7 +534,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
 
         if (data.getMonthlySavings() != null)
         {
-            monthlySavingsLabel.setText(Values.Money.format(data.getMonthlySavings(), currency));
+            monthlySavingsLabel.setText(formatMoneyShort(data.getMonthlySavings(), currency));
             monthlySavingsLabel.setTextColor(data.getMonthlySavings().isNegative() ? 
                             Colors.theme().redForeground() : Colors.theme().greenForeground());
         }
