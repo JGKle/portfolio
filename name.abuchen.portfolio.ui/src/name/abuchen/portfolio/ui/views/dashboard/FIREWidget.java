@@ -607,11 +607,13 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         Label yearsToFireLbl = new Label(container, SWT.NONE);
         yearsToFireLbl.setText(Messages.LabelFIREYearsToFIRE + ":");
         yearsToFireLbl.setBackground(container.getBackground());
+        yearsToFireLbl.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(yearsToFireLbl);
 
         yearsToFireLabel = new ColoredLabel(container, SWT.RIGHT);
         yearsToFireLabel.setBackground(Colors.theme().defaultBackground());
         yearsToFireLabel.setText("");
+        yearsToFireLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(yearsToFireLabel);
 
         // FIRE Date
@@ -619,11 +621,13 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         Label targetDateLbl = new Label(container, SWT.NONE);
         targetDateLbl.setText(Messages.LabelFIRETargetDate + ":");
         targetDateLbl.setBackground(container.getBackground());
+        targetDateLbl.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(targetDateLbl);
 
         targetDateLabel = new ColoredLabel(container, SWT.RIGHT);
         targetDateLabel.setBackground(Colors.theme().defaultBackground());
         targetDateLabel.setText("");
+        targetDateLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(targetDateLabel);
 
         return container;
