@@ -44,7 +44,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         private Money currentValue;
         private Money monthlySavings;
         private double twror;
-        private double yearsToFire;
+        private double timeToFire;
         private LocalDate targetDate;
 
         public Money getFireNumber()
@@ -87,14 +87,14 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             this.twror = twror;
         }
 
-        public double getYearsToFire()
+        public double getTimeToFire()
         {
-            return yearsToFire;
+            return timeToFire;
         }
 
-        public void setYearsToFire(double yearsToFire)
+        public void setTimeToFire(double timeToFire)
         {
-            this.yearsToFire = yearsToFire;
+            this.timeToFire = timeToFire;
         }
 
         public LocalDate getTargetDate()
@@ -304,7 +304,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     private Text monthlySavingsInput;
     private ColoredLabel twrorLabel;
     private Text twrorInput;
-    private ColoredLabel yearsToFireLabel;
+    private ColoredLabel timeToFireLabel;
     private ColoredLabel targetDateLabel;
 
     public FIREWidget(Widget widget, DashboardData dashboardData)
@@ -602,19 +602,19 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             }
         });
 
-        // Years to FIRE
+        // Time to FIRE
         new Label(container, SWT.NONE); // Empty sign column
-        Label yearsToFireLbl = new Label(container, SWT.NONE);
-        yearsToFireLbl.setText(Messages.LabelFIREYearsToFIRE + ":");
-        yearsToFireLbl.setBackground(container.getBackground());
-        yearsToFireLbl.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(yearsToFireLbl);
+        Label timeToFireLbl = new Label(container, SWT.NONE);
+        timeToFireLbl.setText(Messages.LabelFIRETimeToFIRE + ":");
+        timeToFireLbl.setBackground(container.getBackground());
+        timeToFireLbl.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(timeToFireLbl);
 
-        yearsToFireLabel = new ColoredLabel(container, SWT.RIGHT);
-        yearsToFireLabel.setBackground(Colors.theme().defaultBackground());
-        yearsToFireLabel.setText("");
-        yearsToFireLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(yearsToFireLabel);
+        timeToFireLabel = new ColoredLabel(container, SWT.RIGHT);
+        timeToFireLabel.setBackground(Colors.theme().defaultBackground());
+        timeToFireLabel.setText("");
+        timeToFireLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(timeToFireLabel);
 
         // FIRE Date
         new Label(container, SWT.NONE); // Empty sign column
@@ -686,14 +686,14 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             if (data.getFireNumber() != null && data.getCurrentValue() != null && data.getMonthlySavings() != null
                             && data.getTwror() > 0)
             {
-                double yearsToFire = calculateYearsToFIRE(data.getCurrentValue().getAmount(),
+                double timeToFire = calculateTimeToFIRE(data.getCurrentValue().getAmount(),
                                 data.getFireNumber().getAmount(), data.getMonthlySavings().getAmount(),
                                 data.getTwror());
-                data.setYearsToFire(yearsToFire);
+                data.setTimeToFire(timeToFire);
 
-                if (yearsToFire > 0 && yearsToFire < 100) // reasonable bounds
+                if (timeToFire > 0 && timeToFire < 100) // reasonable bounds
                 {
-                    long daysToAdd = Math.round(yearsToFire * 365.25);
+                    long daysToAdd = Math.round(timeToFire * 365.25);
                     data.setTargetDate(LocalDate.now().plusDays(daysToAdd));
                 }
             }
@@ -702,7 +702,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         };
     }
 
-    private double calculateYearsToFIRE(long currentValue, long fireNumber, long monthlySavings, double annualReturn)
+    private double calculateTimeToFIRE(long currentValue, long fireNumber, long monthlySavings, double annualReturn)
     {
         if (currentValue >= fireNumber)
             return 0;
@@ -831,15 +831,15 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
 
         if (data.getFireNumber() == null)
         {
-            yearsToFireLabel.setText("-");
-            yearsToFireLabel.setTextColor(Colors.theme().defaultForeground());
+            timeToFireLabel.setText("-");
+            timeToFireLabel.setTextColor(Colors.theme().defaultForeground());
             targetDateLabel.setText("-");
             targetDateLabel.setTextColor(Colors.theme().defaultForeground());
         }
-        else if (data.getYearsToFire() > 0 && data.getYearsToFire() < 100)
+        else if (data.getTimeToFire() > 0 && data.getTimeToFire() < 100)
         {
-            yearsToFireLabel.setText(String.format("%.1f years", data.getYearsToFire()));
-            yearsToFireLabel.setTextColor(Colors.theme().defaultForeground());
+            timeToFireLabel.setText(String.format("%.1f years", data.getTimeToFire()));
+            timeToFireLabel.setTextColor(Colors.theme().defaultForeground());
 
             if (data.getTargetDate() != null)
             {
@@ -852,17 +852,17 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
                 targetDateLabel.setText("-");
             }
         }
-        else if (data.getYearsToFire() == 0)
+        else if (data.getTimeToFire() == 0)
         {
-            yearsToFireLabel.setText("FIRE achieved!");
-            yearsToFireLabel.setTextColor(Colors.theme().greenForeground());
+            timeToFireLabel.setText("FIRE achieved!");
+            timeToFireLabel.setTextColor(Colors.theme().greenForeground());
             targetDateLabel.setText("Today!");
             targetDateLabel.setTextColor(Colors.theme().greenForeground());
         }
         else
         {
-            yearsToFireLabel.setText("∞");
-            yearsToFireLabel.setTextColor(Colors.theme().redForeground());
+            timeToFireLabel.setText("∞");
+            timeToFireLabel.setTextColor(Colors.theme().redForeground());
             targetDateLabel.setText("-");
             targetDateLabel.setTextColor(Colors.theme().defaultForeground());
         }
