@@ -934,6 +934,13 @@ public class Messages extends NLS
     public static String LabelTTWROR;
     public static String LabelTTWROR_Annualized;
     public static String LabelTTWROROneDay;
+    public static String LabelFIREWidget;
+    public static String LabelFIRENumber;
+    public static String LabelFIRECurrentValue;
+    public static String LabelFIREMonthlySavings;
+    public static String LabelFIRETWRoR;
+    public static String LabelFIREYearsToFIRE;
+    public static String LabelFIRETargetDate;
     public static String LabelUnexpectedQuotes;
     public static String LabelUnexpectedQuotes_Description;
     public static String LabelUnhide;
