@@ -366,7 +366,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             @Override
             public void mouseDown(MouseEvent e)
             {
-                showTextInput();
+                showInput(fireNumberLabel, fireNumberInput);
             }
         });
         
@@ -400,7 +400,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             @Override
             public void focusLost(FocusEvent e)
             {
-                showLabel();
+                showLabel(fireNumberLabel, fireNumberInput);
             }
         });
         
@@ -412,7 +412,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             {
                 if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
                 {
-                    showLabel();
+                    showLabel(fireNumberLabel, fireNumberInput);
                 }
             }
         });
@@ -452,7 +452,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             @Override
             public void mouseDown(MouseEvent e)
             {
-                showMonthlySavingsInput();
+                showInput(monthlySavingsLabel, monthlySavingsInput);
             }
         });
         
@@ -486,7 +486,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             @Override
             public void focusLost(FocusEvent e)
             {
-                showMonthlySavingsLabel();
+                showLabel(monthlySavingsLabel, monthlySavingsInput);
             }
         });
         
@@ -498,7 +498,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             {
                 if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
                 {
-                    showMonthlySavingsLabel();
+                    showLabel(monthlySavingsLabel, monthlySavingsInput);
                 }
             }
         });
@@ -538,7 +538,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             @Override
             public void mouseDown(MouseEvent e)
             {
-                showReturnsInput();
+                showInput(twrorLabel, twrorInput);
             }
         });
         
@@ -570,7 +570,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             @Override
             public void focusLost(FocusEvent e)
             {
-                showReturnsLabel();
+                showLabel(twrorLabel, twrorInput);
             }
         });
         
@@ -582,7 +582,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             {
                 if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR)
                 {
-                    showReturnsLabel();
+                    showLabel(twrorLabel, twrorInput);
                 }
             }
         });
@@ -723,77 +723,30 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         return (low + high) / 2.0 / 12.0;
     }
 
-    private void showTextInput()
+    private void showInput(ColoredLabel label, Text input)
     {
-        fireNumberLabel.setVisible(false);
-        ((org.eclipse.swt.layout.GridData) fireNumberLabel.getLayoutData()).exclude = true;
+        label.setVisible(false);
+        ((org.eclipse.swt.layout.GridData) label.getLayoutData()).exclude = true;
         
-        fireNumberInput.setVisible(true);
-        ((org.eclipse.swt.layout.GridData) fireNumberInput.getLayoutData()).exclude = false;
+        input.setVisible(true);
+        ((org.eclipse.swt.layout.GridData) input.getLayoutData()).exclude = false;
         
         container.layout(true);
-        fireNumberInput.setFocus();
-        fireNumberInput.selectAll();
+        input.setFocus();
+        input.selectAll();
     }
     
-    private void showLabel()
+    private void showLabel(ColoredLabel label, Text input)
     {
-        fireNumberInput.setVisible(false);
-        ((org.eclipse.swt.layout.GridData) fireNumberInput.getLayoutData()).exclude = true;
+        input.setVisible(false);
+        ((org.eclipse.swt.layout.GridData) input.getLayoutData()).exclude = true;
         
-        fireNumberLabel.setVisible(true);
-        ((org.eclipse.swt.layout.GridData) fireNumberLabel.getLayoutData()).exclude = false;
+        label.setVisible(true);
+        ((org.eclipse.swt.layout.GridData) label.getLayoutData()).exclude = false;
         
         container.layout(true);
     }
-    
-    private void showMonthlySavingsInput()
-    {
-        monthlySavingsLabel.setVisible(false);
-        ((org.eclipse.swt.layout.GridData) monthlySavingsLabel.getLayoutData()).exclude = true;
-        
-        monthlySavingsInput.setVisible(true);
-        ((org.eclipse.swt.layout.GridData) monthlySavingsInput.getLayoutData()).exclude = false;
-        
-        container.layout(true);
-        monthlySavingsInput.setFocus();
-        monthlySavingsInput.selectAll();
-    }
-    
-    private void showMonthlySavingsLabel()
-    {
-        monthlySavingsInput.setVisible(false);
-        ((org.eclipse.swt.layout.GridData) monthlySavingsInput.getLayoutData()).exclude = true;
-        
-        monthlySavingsLabel.setVisible(true);
-        ((org.eclipse.swt.layout.GridData) monthlySavingsLabel.getLayoutData()).exclude = false;
-        
-        container.layout(true);
-    }
-    
-    private void showReturnsInput()
-    {
-        twrorLabel.setVisible(false);
-        ((org.eclipse.swt.layout.GridData) twrorLabel.getLayoutData()).exclude = true;
-        
-        twrorInput.setVisible(true);
-        ((org.eclipse.swt.layout.GridData) twrorInput.getLayoutData()).exclude = false;
-        
-        container.layout(true);
-        twrorInput.setFocus();
-        twrorInput.selectAll();
-    }
-    
-    private void showReturnsLabel()
-    {
-        twrorInput.setVisible(false);
-        ((org.eclipse.swt.layout.GridData) twrorInput.getLayoutData()).exclude = true;
-        
-        twrorLabel.setVisible(true);
-        ((org.eclipse.swt.layout.GridData) twrorLabel.getLayoutData()).exclude = false;
-        
-        container.layout(true);
-    }
+
 
     private String formatMoneyShort(Money money, String currency)
     {
