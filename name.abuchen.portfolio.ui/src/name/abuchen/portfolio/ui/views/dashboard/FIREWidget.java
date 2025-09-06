@@ -22,10 +22,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
-import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
@@ -155,7 +153,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            String display = fireNumber != null ? formatMoneyShort(fireNumber, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
+            String display = fireNumber != null ? ((FIREWidget)delegate).formatMoneyShort(fireNumber, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
             manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, 
                             new LabelOnly(Messages.LabelFIRENumber + ": " + display));
         }
@@ -163,17 +161,10 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         @Override
         public String getLabel()
         {
-            String display = fireNumber != null ? formatMoneyShort(fireNumber, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
+            String display = fireNumber != null ? ((FIREWidget)delegate).formatMoneyShort(fireNumber, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
             return Messages.LabelFIRENumber + ": " + display;
         }
 
-        private String formatMoneyShort(Money money, String currency)
-        {
-            // Create a Money object with rounded amount (no cents) and format normally
-            long roundedAmount = (money.getAmount() / 100) * 100; // Round to nearest dollar
-            Money roundedMoney = Money.of(currency, roundedAmount);
-            return Values.Money.format(roundedMoney, currency).replaceAll("\\.00", "");
-        }
     }
 
     private static class FIREMonthlySavingsConfig implements WidgetConfig
@@ -221,7 +212,7 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            String display = monthlySavings != null ? formatMoneyShort(monthlySavings, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
+            String display = monthlySavings != null ? ((FIREWidget)delegate).formatMoneyShort(monthlySavings, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
             manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, 
                             new LabelOnly(Messages.LabelFIREMonthlySavings + ": " + display));
         }
@@ -229,16 +220,10 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
         @Override
         public String getLabel()
         {
-            String display = monthlySavings != null ? formatMoneyShort(monthlySavings, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
+            String display = monthlySavings != null ? ((FIREWidget)delegate).formatMoneyShort(monthlySavings, delegate.getClient().getBaseCurrency()) : Messages.LabelFIREClickToSet;
             return Messages.LabelFIREMonthlySavings + ": " + display;
         }
 
-        private String formatMoneyShort(Money money, String currency)
-        {
-            long roundedAmount = (money.getAmount() / 100) * 100;
-            Money roundedMoney = Money.of(currency, roundedAmount);
-            return Values.Money.format(roundedMoney, currency).replaceAll("\\.00", "");
-        }
     }
 
     private static class FIREReturnsConfig implements WidgetConfig
@@ -314,7 +299,6 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
     {
         super(widget, dashboardData);
 
-        addConfig(new ReportingPeriodConfig(this));
         addConfig(new FIRENumberConfig(this));
         addConfig(new FIREMonthlySavingsConfig(this));
         addConfig(new FIREReturnsConfig(this));
@@ -649,16 +633,15 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             var availableSeries = getDashboardData().getDataSeriesSet().getAvailableSeries();
             if (!availableSeries.isEmpty())
             {
-                PerformanceIndex index = getDashboardData().calculate(availableSeries.get(0),
-                                get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
+                // Use last 1 year for current value and returns calculation
+                LocalDate now = LocalDate.now();
+                Interval interval = Interval.of(now.minusYears(1), now);
+                PerformanceIndex index = getDashboardData().calculate(availableSeries.get(0), interval);
                 
                 long[] totals = index.getTotals();
                 if (totals.length > 0)
                 {
                     data.setCurrentValue(Money.of(index.getCurrency(), totals[totals.length - 1]));
-                    
-                    // Calculate annualized TWRoR
-                    data.setTwror(index.getFinalAccumulatedAnnualizedPercentage());
                 }
             }
 
@@ -672,8 +655,9 @@ public class FIREWidget extends WidgetDelegate<FIREWidget.FIREData>
             else if (!availableSeries.isEmpty())
             {
                 // Fallback to calculated returns if user hasn't set custom value
-                PerformanceIndex index = getDashboardData().calculate(availableSeries.get(0),
-                                get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
+                LocalDate now = LocalDate.now();
+                Interval interval = Interval.of(now.minusYears(1), now);
+                PerformanceIndex index = getDashboardData().calculate(availableSeries.get(0), interval);
                 data.setTwror(index.getFinalAccumulatedAnnualizedPercentage());
             }
 
